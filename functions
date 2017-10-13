@@ -1,0 +1,8 @@
+function distribution_from_category_331()
+{
+    $products_names_query=vam_db_query("SELECT `products_description`.`products_id`,  `products`.`products_model`, `products_description`.`products_name`
+    FROM  `products_description`
+    LEFT JOIN   `products_to_categories` ON `products_description`.`products_id` = `products_to_categories`.`products_id`
+    LEFT JOIN   `products` ON `products_description`.`products_id` = `products`.`products_id`
+    WHERE `products_to_categories`.`categories_id` = 331 LIMIT 0, 30");
+}
