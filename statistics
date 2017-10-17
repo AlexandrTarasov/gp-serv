@@ -1,0 +1,156 @@
+<?php
+require_once ('includes/application_top.php');
+
+# next http://www.chartjs.org/samples/latest/charts/polar-area.html
+
+$curr_date = date("Y-m-d");
+$quantity_in_day = array();
+$change_date = 0;
+$data_to_chart = array();
+$cut_date = 0;
+$times = '';
+$days = '';
+$period = 10;
+
+vam_db_connect();
+$fast_order_query = vam_db_query("SELECT * FROM  `fast_order` WHERE `date` > NOW() - INTERVAL '".$period."' DAY ");
+//query with current date.
+while($fast_order_data = vam_db_fetch_array($fast_order_query)){
+
+		if ($fast_order_data['date'] == $change_date){$quantity_in_day[$fast_order_data['date']] = $quantity_in_day[$fast_order_data['date']]+1;}
+		else
+		{
+			$quantity_in_day[$fast_order_data['date']] = 1;
+			$change_date = $fast_order_data['date'];
+		}
+	//echo $fast_order_data['date']."---".$change_date."<br>"; 
+	
+}
+
+$date = new DateTime($curr_date);
+for($i=0;$i<$period;$i++){
+
+	$date->sub(new DateInterval('P'.$i.'D'));
+	$key = $date->format('Y-m-d');
+
+  if (array_key_exists($key, $quantity_in_day)) {
+  	
+  	$data_to_chart[$key] = $quantity_in_day[$key];
+
+  }
+  else{
+  	$data_to_chart[$key] = 0;
+	}
+	/*$count= mysql_num_rows($fast_order_query);
+	echo $count;*/ 	
+}
+	$reversed = array_reverse($data_to_chart);
+	
+foreach ($reversed as $ind => $quant) {//cut the date string
+		if ($cut_date>0) {
+			$ind = substr($ind, 5); 
+		}
+		$times .= $quant.", "; 
+		$days .= "\"".$ind."\", ";
+		$cut_date++;
+}
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html <?php echo HTML_PARAMS; ?>>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $_SESSION['language_charset']; ?>">
+		<title><?php echo TITLE; ?></title>
+		<link rel="stylesheet" type="text/css" href="includes/stylesheet.css">
+		<script type="text/javascript" src="includes/general.js"></script>
+		<script type="text/javascript" src="includes/javascript/categories.js"></script>
+		<script src="Chart.bundle.js"></script>
+</head>
+<body>
+
+		<!-- header //-->
+		<?php require(DIR_WS_INCLUDES . 'header.php'); ?>
+		<!-- header_eof //-->
+
+<!-- body //-->
+<canvas id="myChart"style="max-height:500px; max-width:700px; float:left;" ></canvas>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: [<?=$days?>],
+        datasets: [{
+            label: "Быстрые звонки",
+            backgroundColor: 'rgb(154, 243, 252',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [<?=$times?>],
+            cubicInterpolationMode: 'monotone'
+        }]
+    },
+
+    // Configuration options go here
+    options: { 
+    	scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true
+          }
+        }]
+      }
+    }
+});
+
+
+
+</script>
+
+
+
+<canvas id="most_viewed"style="max-height:500px; max-width:700px; float:right;" ></canvas>
+<script>
+var ctx = document.getElementById('most_viewed').getContext('2d');
+var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: ["1","2","3","4"],
+        datasets: [{
+            label: "Самые просматриваемые",
+            backgroundColor: 'rgb(154, 243, 252',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [50, 134, 73, 28],
+            cubicInterpolationMode: 'monotone'
+        }]
+    },
+
+    // Configuration options go here
+    options: { 
+    	scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true
+          }
+        }]
+      }
+    }
+});
+
+
+
+</script>
+
+
+<!-- body_eof //-->
+
+		<!-- footer //-->
+    <?php require(DIR_WS_INCLUDES . 'footer.php'); ?>
+		<!-- footer_eof //-->
+	</body>
+</html>
+<?php require(DIR_WS_INCLUDES . 'application_bottom.php'); ?>
