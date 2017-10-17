@@ -27,9 +27,9 @@ while($fast_order_data = vam_db_fetch_array($fast_order_query)){
 	
 }
 
-$date = new DateTime($curr_date);
-for($i=0;$i<$period;$i++){
 
+for($i=0;$i<$period;$i++){
+	$date = new DateTime($curr_date);
 	$date->sub(new DateInterval('P'.$i.'D'));
 	$key = $date->format('Y-m-d');
 
