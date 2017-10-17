@@ -65,6 +65,8 @@ foreach ($reversed as $ind => $quant) {//cut the date string
 		<script type="text/javascript" src="includes/general.js"></script>
 		<script type="text/javascript" src="includes/javascript/categories.js"></script>
 		<script src="Chart.bundle.js"></script>
+		<script src="utils.js"></script>
+
 </head>
 <body>
 
@@ -73,7 +75,7 @@ foreach ($reversed as $ind => $quant) {//cut the date string
 		<!-- header_eof //-->
 
 <!-- body //-->
-<canvas id="myChart"style="max-height:500px; max-width:700px; float:left;" ></canvas>
+<canvas id="myChart"style=" max-width:48%; float:left;" ></canvas>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var chart = new Chart(ctx, {
@@ -109,39 +111,104 @@ var chart = new Chart(ctx, {
 </script>
 
 
+<div id="canvas-holder" style="width:49%;float:right;">
+   <canvas id="chart-area"></canvas>
+	<button id="randomizeData">Randomize Data</button>
+	<button id="addData">Add Data</button>
+	<button id="removeData">Remove Data</button>
+</div>
 
-<canvas id="most_viewed"style="max-height:500px; max-width:700px; float:right;" ></canvas>
+<!-- canvas id="most_viewed"style="max-height:450px; max-width:600px; float:right;" ></canvas -->
 <script>
-var ctx = document.getElementById('most_viewed').getContext('2d');
-var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'line',
+    var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+    };
 
-    // The data for our dataset
-    data: {
-        labels: ["1","2","3","4"],
-        datasets: [{
-            label: "Самые просматриваемые",
-            backgroundColor: 'rgb(154, 243, 252',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [50, 134, 73, 28],
-            cubicInterpolationMode: 'monotone'
-        }]
-    },
+    var chartColors = window.chartColors;
+    var color = Chart.helpers.color;
+    var config = {
+        data: {
+            datasets: [{
+                data: [
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                ],
+                backgroundColor: [
+                    color(chartColors.red).alpha(0.5).rgbString(),
+                    color(chartColors.orange).alpha(0.5).rgbString(),
+                    color(chartColors.yellow).alpha(0.5).rgbString(),
+                    color(chartColors.green).alpha(0.5).rgbString(),
+                    color(chartColors.blue).alpha(0.5).rgbString(),
+                ],
+                label: 'My dataset' // for legend
+            }],
+            labels: [
+                "Бампер",
+                "капот амулет",
+                "фара левая",
+                "свеча зажигания",
+                "тяга рулевая"
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'right',
+            },
+            title: {
+                display: true,
+                text: 'Самые просматриваемые товары'
+            },
+            scale: {
+              ticks: {
+                beginAtZero: true
+              },
+              reverse: false
+            },
+            animation: {
+                animateRotate: false,
+                animateScale: true
+            }
+        }
+    };
 
-    // Configuration options go here
-    options: { 
-    	scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero:true
-          }
-        }]
-      }
-    }
-});
+    window.onload = function() {
+        var ctx = document.getElementById("chart-area");
+        window.myPolarArea = Chart.PolarArea(ctx, config);
+    };
 
+    document.getElementById('randomizeData').addEventListener('click', function() {
+        config.data.datasets.forEach(function(piece, i) {
+            piece.data.forEach(function(value, j) {
+                config.data.datasets[i].data[j] = randomScalingFactor();
+            });
+        });
+        window.myPolarArea.update();
+    });
 
+    var colorNames = Object.keys(window.chartColors);
+    document.getElementById('addData').addEventListener('click', function() {
+        if (config.data.datasets.length > 0) {
+            config.data.labels.push('data #' + config.data.labels.length);
+            config.data.datasets.forEach(function(dataset) {
+                var colorName = colorNames[config.data.labels.length % colorNames.length];
+                dataset.backgroundColor.push(window.chartColors[colorName]);
+                dataset.data.push(randomScalingFactor());
+            });
+            window.myPolarArea.update();
+        }
+    });
+    document.getElementById('removeData').addEventListener('click', function() {
+        config.data.labels.pop(); // remove the label first
+        config.data.datasets.forEach(function(dataset) {
+            dataset.backgroundColor.pop();
+            dataset.data.pop();
+        });
+        window.myPolarArea.update();
+    });
 
 </script>
 
