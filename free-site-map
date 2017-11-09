@@ -1,0 +1,49 @@
+<?php
+include ('includes/application_top.php');
+
+$my_links="<?xml version='1.0' encoding='UTF-8'?>"."\n".'<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/09/sitemap.xsd"	xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
+
+/*first take categories data*/
+$categories_query = "select c.categories_id, cd.categories_name, c.parent_id from " . TABLE_CATEGORIES . " c, " . TABLE_CATEGORIES_DESCRIPTION . " cd where c.categories_id = cd.categories_id and cd.language_id = '" . $_SESSION['languages_id'] . "'  and c.categories_status = '1' order by c.sort_order, cd.categories_name";
+   $categories_query = vamDBquery($categories_query);
+
+while ($categories = vam_db_fetch_array($categories_query,true)) {
+    $SEF_link_cat = vam_href_link(FILENAME_DEFAULT, vam_category_link($categories['categories_id'],$categories['categories_name']));
+    $my_links.="<url>\n";
+    //$my_links.="<loc>";
+    $my_links.="<loc>".$SEF_link_cat."</loc>\n";
+    $my_links.="<priority>1.0</priority>\n";
+    $my_links.="<lastmod>2017-05-26</lastmod>\n";
+    $my_links.="</url>\n";
+
+
+}
+//echo $my_links;
+/*Second take products data*/
+$p_query = "select  p.products_id, pd.products_name,  p.products_last_modified FROM " .TABLE_PRODUCTS. " p left join "
+      .TABLE_PRODUCTS_DESCRIPTION." pd on p.products_id = pd.products_id WHERE p.products_status = '1' and pd.language_id = ".$_SESSION['languages_id']." order by p.products_id DESC ";
+
+$p_query = vamDBquery($p_query);
+
+  while ($p = vam_db_fetch_array($p_query,true)) {
+    $SEF_link_p = vam_href_link('product_info.php', vam_product_link($p['products_id'],$p['products_name']));
+	  //echo "<a href=".$SEF_link.">".$p['products_name'];
+    $my_links.="<url>\n";
+    //$my_links.="<loc>";
+    $my_links.="<loc>".$SEF_link_p."</loc>\n";
+    //$my_links.="</loc>\n";
+    $my_links.="<priority>0.7</priority>\n";
+    $time=explode(" ", $p['products_last_modified']);
+    $my_links.="<lastmod>2017-10-11</lastmod>\n";
+    $my_links.="</url>\n";
+  }
+
+$my_links.="</urlset>";
+
+$fp = fopen("sitemap.xml", "w");
+$test = fwrite($fp, $my_links);
+if ($test) echo 'Data is in file.';
+else echo 'error while data.';
+fclose($fp);
+
+?>
