@@ -10,7 +10,6 @@ $categories_query = "select c.categories_id, cd.categories_name, c.parent_id fro
 while ($categories = vam_db_fetch_array($categories_query,true)) {
     $SEF_link_cat = vam_href_link(FILENAME_DEFAULT, vam_category_link($categories['categories_id'],$categories['categories_name']));
     $my_links.="<url>\n";
-    //$my_links.="<loc>";
     $my_links.="<loc>".$SEF_link_cat."</loc>\n";
     $my_links.="<priority>1.0</priority>\n";
     $my_links.="<lastmod>2017-05-26</lastmod>\n";
@@ -27,11 +26,9 @@ $p_query = vamDBquery($p_query);
 
   while ($p = vam_db_fetch_array($p_query,true)) {
     $SEF_link_p = vam_href_link('product_info.php', vam_product_link($p['products_id'],$p['products_name']));
-	  //echo "<a href=".$SEF_link.">".$p['products_name'];
+	  
     $my_links.="<url>\n";
-    //$my_links.="<loc>";
     $my_links.="<loc>".$SEF_link_p."</loc>\n";
-    //$my_links.="</loc>\n";
     $my_links.="<priority>0.7</priority>\n";
     $time=explode(" ", $p['products_last_modified']);
     $my_links.="<lastmod>2017-10-11</lastmod>\n";
