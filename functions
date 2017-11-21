@@ -6,3 +6,58 @@ function distribution_from_category_331()
     LEFT JOIN   `products` ON `products_description`.`products_id` = `products`.`products_id`
     WHERE `products_to_categories`.`categories_id` = 331 LIMIT 0, 30");
 }
+ function add_sistem(){
+
+   if($_GET['actionaddsis']==1)
+        {
+     array_pop($_GET);
+      foreach ($_GET as $key => $value) {
+
+     $key=str_replace("prod", "", $key);
+     //echo $key." - ".$value; echo"<br>";
+
+     vam_db_query("UPDATE `products` SET `manufacturers_id`='".$value."' WHERE `products_id` = ".$key." ");
+
+     //echo "UPDATE `products` SET `manufacturers_id`='".$value."' WHERE `products_id` = ".$key." "; echo"<br>";
+
+     }
+    echo"<a href=\"http://www.gp-service.com.ua/admin/my_funcs.php\">вернуться</a>";
+    }
+     else{
+
+        // не забываем добавлять id категории
+		$content_query=vam_db_query("SELECT pd.products_id, pd.products_name, p.products_model, p.products_price,  p.manufacturers_id
+		FROM products_description pd
+		LEFT JOIN products_to_categories ctd ON pd.products_id = ctd.products_id LEFT JOIN products p ON  pd.products_id = p.products_id
+		WHERE p.manufacturers_id = '0'
+		AND ctd.categories_id =8 LIMIT 30" );   //менять id категории
+   echo"<form action=\"\">";
+   while($content_data=vam_db_fetch_array($content_query)){
+
+    echo $content_data['products_model']." ".$content_data['products_id'];
+    $prod_name=$content_data['products_name'];
+    echo $prod_name;
+    echo"<select size=\"1\" name=\"prod".$content_data['products_id']."\">
+    <option value=\"38\">Аксессуары</option>
+    <option value=\"36\">Внутренняя отделка</option>
+    <option value=\"28\">Двигатель</option>
+    <option value=\"31\">Кузов</option>
+    <option value=\"33\">доп системы</option>
+    <option value=\"37\">вент,конд,обогрев</option>
+    <option value=\"35\">кпп</option>
+    <option value=\"50\">оптика</option>
+    <option value=\"51\">стёкла</option>
+    <option value=\"34\">сцепление</option>
+    <option value=\"29\">тормоза</option>
+    <option value=\"30\">ходовая</option>
+    <option value=\"32\">электрика</option>
+    <option value=\"76\">фильтра</option>
+    </select> ";
+   echo"<br><br><br>";
+    }
+
+    echo"<input name=\"actionaddsis\" type=\"hidden\" value=\"1\"><input type=\"submit\" value=\"Send\"></form>";
+
+
+    }
+  }
