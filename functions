@@ -40,18 +40,7 @@ function distribution_from_category_331()
     echo"<select size=\"1\" name=\"prod".$content_data['products_id']."\">
     <option value=\"38\">Аксессуары</option>
     <option value=\"36\">Внутренняя отделка</option>
-    <option value=\"28\">Двигатель</option>
-    <option value=\"31\">Кузов</option>
-    <option value=\"33\">доп системы</option>
-    <option value=\"37\">вент,конд,обогрев</option>
-    <option value=\"35\">кпп</option>
-    <option value=\"50\">оптика</option>
-    <option value=\"51\">стёкла</option>
-    <option value=\"34\">сцепление</option>
-    <option value=\"29\">тормоза</option>
-    <option value=\"30\">ходовая</option>
-    <option value=\"32\">электрика</option>
-    <option value=\"76\">фильтра</option>
+ //here list of system points
     </select> ";
    echo"<br><br><br>";
     }
