@@ -10,7 +10,7 @@ $data_to_chart = array();
 $cut_date = 0;
 $times = '';
 $days = '';
-$period = 10;
+$period = 15;
 
 vam_db_connect();
 $fast_order_query = vam_db_query("SELECT * FROM  `fast_order` WHERE `date` > NOW() - INTERVAL '".$period."' DAY ");
